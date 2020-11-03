@@ -112,7 +112,7 @@ public class MyInfoSecurityHelper {
 		String strParams = strParam.toString().substring(0, strParam.length() - 1);
 
 		if (bearer != null) {
-			authHeader = ApplicationConstant.PKI_SIGN + " " + strParam + "," + ApplicationConstant.BEARER + " "
+			authHeader = ApplicationConstant.PKI_SIGN + " " + strParams + "," + ApplicationConstant.BEARER + " "
 					+ bearer;
 		} else {
 			authHeader = ApplicationConstant.PKI_SIGN + " " + strParams;

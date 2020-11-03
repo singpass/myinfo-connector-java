@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URL;
+import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.security.Key;
 import java.security.KeyStore;
@@ -626,7 +627,7 @@ public class MyInfoConnector {
 
 				String personAuthHeaderParams = MyInfoSecurityHelper.generateAuthorizationHeader(authHeaderParams,
 						bearer);
-				authHeader = ApplicationConstant.PKI_SIGN + " " + personAuthHeaderParams + ","
+				authHeader = personAuthHeaderParams + ","
 						+ ApplicationConstant.BEARER + " " + bearer;
 
 			}
@@ -635,7 +636,7 @@ public class MyInfoConnector {
 			StringBuilder params = new StringBuilder();
 
 			params.append(ApplicationConstant.CLIENT_ID).append("=").append(clientAppId).append("&")
-					.append(ApplicationConstant.ATTRIBUTE).append("=").append(attributes);
+					.append(ApplicationConstant.ATTRIBUTE).append("=").append(URLEncoder.encode(attributes, StandardCharsets.UTF_8.toString()));
 			if (txnNo != null) {
 				params.append("&").append(ApplicationConstant.TRANSACTION_NO).append("=").append(txnNo);
 			}
