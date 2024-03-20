@@ -47,6 +47,7 @@ public class MyInfoConnector {
 	private String privateKeyPwd;
 	private String clientAppId;
 	private String clientAppPwd;
+	private String spEsvcId;
 	private String redirectUri;
 	private String attributes;
 	private String env;
@@ -140,6 +141,11 @@ public class MyInfoConnector {
 		} else {
 			this.clientAppPwd = prop.getProperty("CLIENT_SECRET");
 		}
+		if (StringUtil.isEmptyAndNull(prop.getProperty("SP_ESERVICES_ID"))) {
+			throw new MyInfoException("eService Id not found or empty in properties file!");
+		} else {
+			this.spEsvcId = prop.getProperty("SP_ESERVICES_ID");
+		}
 		if (StringUtil.isEmptyAndNull(prop.getProperty("REDIRECT_URL"))) {
 			throw new MyInfoException("Redirect url not found or empty in properties file!");
 		} else {
@@ -232,7 +238,7 @@ public class MyInfoConnector {
 	 */
 	protected static String getMyInfoPersonData(String authCode, String txnNo, String state, Certificate publicCert,
 			Key privateKey, String clientAppId, String clientAppPwd, String redirectUri, String attributes,
-			String env, String tokenURL, String personURL, String proxyTokenURL, String proxyPersonURL, String useProxy)
+			String env, String tokenURL, String personURL, String proxyTokenURL, String proxyPersonURL, String useProxy, String spEsvcId)
 			throws MyInfoException {
 
 		String result = null;
@@ -250,7 +256,7 @@ public class MyInfoConnector {
 
 		// Get person
 		result = MyInfoConnector.getPersonData(tokenJWT.getSubject(), tokenList.get(ApplicationConstant.ACCESS_TOKEN),
-				txnNo, personURL, clientAppId, attributes, env, privateKey, proxyPersonURL, useProxy);
+				txnNo, personURL, clientAppId, attributes, env, privateKey, proxyPersonURL, useProxy, spEsvcId);
 
 		if (!env.equalsIgnoreCase(ApplicationConstant.SANDBOX)) {
 
@@ -312,7 +318,7 @@ public class MyInfoConnector {
 
 		return getMyInfoPersonData(authCode, txnNo, state, myInfoPublicCert, agencyPrivateKey, this.clientAppId,
 				this.clientAppPwd, this.redirectUri, this.attributes, this.env, this.tokenURL, this.personURL,
-				this.proxyTokenURL, this.proxyPersonURL, this.useProxy);
+				this.proxyTokenURL, this.proxyPersonURL, this.useProxy, this.spEsvcId);
 	}
 
 	/**
@@ -576,7 +582,7 @@ public class MyInfoConnector {
 	 * @throws MyInfoException
 	 */
 	protected static String getPersonData(String uinFin, String bearer, String txnNo, String apiURL, String clientAppId,
-			String attributes, String env, Key myinfoPrivateKey, String proxyPersonURL, String useProxy)
+			String attributes, String env, Key myinfoPrivateKey, String proxyPersonURL, String useProxy, String spEsvcId)
 			throws MyInfoException {
 
 		StringBuilder result = new StringBuilder();
@@ -604,6 +610,7 @@ public class MyInfoConnector {
 			baseParams.put(ApplicationConstant.CLIENT_ID + "=", clientAppId);
 			baseParams.put(ApplicationConstant.NONCE + "=", Integer.toString(nonceValue));
 			baseParams.put(ApplicationConstant.SIGNATURE_METHOD + "=", ApplicationConstant.RS256);
+			baseParams.put(ApplicationConstant.SP_ESVCID + "=", spEsvcId);
 			baseParams.put(ApplicationConstant.TIMESTAMP + "=", Long.toString(timestamp));
 			if (txnNo != null) {
 				baseParams.put(ApplicationConstant.TRANSACTION_NO + "=", txnNo);
@@ -636,7 +643,9 @@ public class MyInfoConnector {
 			StringBuilder params = new StringBuilder();
 
 			params.append(ApplicationConstant.CLIENT_ID).append("=").append(clientAppId).append("&")
-					.append(ApplicationConstant.ATTRIBUTE).append("=").append(URLEncoder.encode(attributes, StandardCharsets.UTF_8.toString()));
+					.append(ApplicationConstant.SP_ESVCID).append("=").append(spEsvcId)
+					.append("&").append(ApplicationConstant.ATTRIBUTE).append("=")
+					.append(URLEncoder.encode(attributes, StandardCharsets.UTF_8.toString()));
 			if (txnNo != null) {
 				params.append("&").append(ApplicationConstant.TRANSACTION_NO).append("=").append(txnNo);
 			}
@@ -707,10 +716,10 @@ public class MyInfoConnector {
 	 * @throws MyInfoException
 	 */
 	protected static String getPersonData(String uinFin, String bearer, String personurl, String clientAppId,
-			String attributes, String env, Key myinfoPrivateKey, String proxyPersonURL, String useProxy)
-			throws MyInfoException {
+			String attributes, String env, Key myinfoPrivateKey, String proxyPersonURL, String useProxy, 
+			String spEsvcId) throws MyInfoException {
 		return getPersonData(uinFin, bearer, null, personurl, clientAppId, attributes, env, myinfoPrivateKey,
-				proxyPersonURL, useProxy);
+				proxyPersonURL, useProxy, spEsvcId);
 	}
 
 }

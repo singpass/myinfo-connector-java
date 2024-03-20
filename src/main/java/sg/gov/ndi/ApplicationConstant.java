@@ -19,6 +19,7 @@ public final class ApplicationConstant {
 	public static final String ATTRIBUTE = "attributes";
 	public static final String TRANSACTION_NO = "txnNo";
 	public static final String RS256 = "RS256";
+	public static final String SP_ESVCID = "sp_esvcId";
 
 	public static final String AUTHORIZATION_CODE = "authorization_code";
 	public static final String AUTHORIZATION = "Authorization";
